@@ -20,22 +20,29 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.proiectmtdl.model.Volunteer
+import com.example.proiectmtdl.ui.navigation.Event
 import com.example.proiectmtdl.ui.navigation.Friends
+import com.example.proiectmtdl.ui.navigation.FullMainPage
 import com.example.proiectmtdl.ui.navigation.HelpNPlayNavigationBar
+import com.example.proiectmtdl.ui.navigation.Login
 import com.example.proiectmtdl.ui.navigation.News
 import com.example.proiectmtdl.ui.navigation.Profile
 import com.example.proiectmtdl.ui.navigation.Search
+import com.example.proiectmtdl.ui.navigation.Signup
+import com.example.proiectmtdl.ui.navigation.Start
 import com.example.proiectmtdl.ui.navigation.UserDestination
 import com.example.proiectmtdl.ui.navigation.navigationTabOptions
 import com.example.proiectmtdl.ui.pages.FriendsPage
+import com.example.proiectmtdl.ui.pages.HelpNPlayEventPage
+import com.example.proiectmtdl.ui.pages.HelpNPlayLogin
 import com.example.proiectmtdl.ui.pages.HelpNPlayNewsList
 import com.example.proiectmtdl.ui.pages.HelpNPlaySearchPage
+import com.example.proiectmtdl.ui.pages.HelpNPlaySignup
+import com.example.proiectmtdl.ui.pages.HelpnPlayMainPage
+import com.example.proiectmtdl.ui.pages.OpeningPage
 import com.example.proiectmtdl.ui.theme.ProiectMTDLTheme
 
 fun NavHostController.navigateSingleTopTo(route: String) = this.navigate(route){launchSingleTop = true}
-
-
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,56 +55,27 @@ class MainActivity : ComponentActivity() {
                 val currentDestination = currentBackStack?.destination
                 val currentScreen = navigationTabOptions.find { it.route == currentDestination?.route } ?: News
 
-                Scaffold(
-                    bottomBar = {
-                        HelpNPlayNavigationBar(
-                            allScreens = navigationTabOptions,
-                            onTabSelected = {newScreen -> navController.navigateSingleTopTo(newScreen.route)},
-                            currentScreen = currentScreen
-                        )
-                    }
-                ) {innerPadding ->
-                    NavHost(
-                        navController = navController,
-                        startDestination = News.route,
-                        modifier = Modifier.padding(innerPadding)
+                NavHost(navController = navController, startDestination = Start.route, modifier = Modifier ){
+                    composable(
+                        route = Start.route
                     ){
-                        composable(
-                            route = News.route
-                        ){
-                            HelpNPlayNewsList(
-                            )
-                        }
-                        composable(
-                            route = Profile.route
-                        ){navBackStackEntry->
-                            HelpNPlayProfilePage(
-                                dominantColor = MaterialTheme.colorScheme.primaryContainer,
-                            )
-                        }
-                        composable(
-                            route = Search.route
-                        ){
-                            HelpNPlaySearchPage()
-                        }
-                        composable(
-                            route = Friends.route
-                        ){
-                            FriendsPage(
-                                navHostController = navController
-                            )
-                        }
-                        composable(
-                            route = "user/{${UserDestination.usernameArg}}",
-                            arguments = UserDestination.arguments
-                        ){
-                            val username = it.arguments?.getString(UserDestination.usernameArg)
-                            HelpNPlayProfilePage(
-                                username = username!!
-                            )
-                        }
+                        OpeningPage(navHostController = navController)
                     }
-
+                    composable(
+                        route = Login.route
+                    ){
+                        HelpNPlayLogin(navController)
+                    }
+                    composable(
+                        route = Signup.route
+                    ){
+                        HelpNPlaySignup(navController)
+                    }
+                    composable(
+                        route = FullMainPage.route
+                    ){
+                        HelpnPlayMainPage()
+                    }
                 }
             }
         }

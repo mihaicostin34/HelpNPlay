@@ -10,6 +10,8 @@ class Event(
     val dates: LinkedList<Date>,
     val organizer: Organizer?,
     val participants: LinkedList<Volunteer>,
-    val quests: List<Quest>
+    val quests: List<Quest>,
+    val awards : LinkedList<Pair<Badge, Int>> = LinkedList(listOf()),
+    val company: Company = Company()
 ) {
 }

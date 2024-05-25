@@ -4,5 +4,6 @@ enum class UserType {
     VOLUNTEER,
     ORGANIZER,
     COMPANY,
-    ADMIN
+    ADMIN,
+    NOT_SPECIFIED
 }

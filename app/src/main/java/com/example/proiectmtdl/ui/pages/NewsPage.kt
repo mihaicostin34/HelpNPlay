@@ -1,5 +1,6 @@
 package com.example.proiectmtdl.ui.pages
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,23 +31,35 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.example.proiectmtdl.model.Event
 import com.example.proiectmtdl.model.NewsItem
 import com.example.proiectmtdl.model.User
 import com.example.proiectmtdl.model.UserType
+import com.example.proiectmtdl.navigateSingleTopTo
+import java.util.LinkedList
 
-//one news card
+fun NavHostController.navigateToEvent(eventId: String) = this.navigateSingleTopTo("event/$eventId")
+
+
+val mockedEvents = LinkedList(listOf(mockedEvent, mockedEvent, mockedEvent))
+
+@Preview
 @Composable
 fun HelpNPlayNewsItem(
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
     isOpened: Boolean = false,
-    newsItem: NewsItem
+    event: Event = mockedEvent,
+    onClickSeeEvent : (String)-> Unit = {}
 ){
     Card (
         modifier = modifier
             .padding(horizontal = 16.dp, vertical = 4.dp)
             .semantics { selected = isSelected }
-            .clip(CardDefaults.shape),
+            .clip(CardDefaults.shape)
+            .clickable { onClickSeeEvent(event.id) }
+        ,
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer
             else if (isOpened) MaterialTheme.colorScheme.secondaryContainer
@@ -58,47 +71,28 @@ fun HelpNPlayNewsItem(
                 .fillMaxWidth()
                 .padding(20.dp)
         ) {
-            Row(modifier = Modifier.fillMaxWidth()){
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 12.dp, vertical = 4.dp),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "First name",
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                    Text(
-                        text = "Last name",
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                }
-                IconButton(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier
-                        .clip(CircleShape)
-//                        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = "Favorite",
-                        tint = MaterialTheme.colorScheme.outline
-                    )
-                }
-            }
-
             Text(
-                text = "Email subject",
+                text = event.name,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(top = 12.dp, bottom = 8.dp),
             )
             Text(
-                text = "Email body",
+                text = event.organizer?.username +  " of " +event.company.username,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
+
+            //TODO: maybe add date handling and showing here
+            Row(modifier = Modifier.fillMaxWidth()){
+                var availableXp = 0
+                for (quest in event.quests) {
+                    availableXp += quest.experience
+                }
+                Text(
+                    text = "Available experience : $availableXp xp"
+                )
+            }
         }
     }
 }
@@ -108,7 +102,8 @@ fun HelpNPlayNewsItem(
 fun HelpNPlayNewsList(
     modifier: Modifier = Modifier,
     newsLazyListState: LazyListState = LazyListState(0, 3),
-    news: List<NewsItem> = newsListPreview
+    events: List<Event> = mockedEvents,
+    navHostController: NavHostController
 ){
     Box(modifier = modifier.windowInsetsPadding(WindowInsets.statusBars)){
         LazyColumn(
@@ -116,111 +111,11 @@ fun HelpNPlayNewsList(
                 .fillMaxWidth(),
             state = newsLazyListState
         ) {
-            items(news){ item: NewsItem ->
+            items(events){ item: Event ->
                 HelpNPlayNewsItem(
                     modifier =modifier,
-                    newsItem = item
-                )
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun HelpNPlayNewsItemPreview(
-    modifier: Modifier = Modifier,
-    isSelected: Boolean = false,
-    isOpened: Boolean = false,
-    newsItem: NewsItem = NewsItem(User("creator_username", "creator_email", UserType.ADMIN, "creator_last_name"), 20)
-){
-    Card (
-        modifier = modifier
-            .padding(horizontal = 16.dp, vertical = 4.dp)
-            .semantics { selected = isSelected }
-            .clip(CardDefaults.shape),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer
-            else if (isOpened) MaterialTheme.colorScheme.secondaryContainer
-            else MaterialTheme.colorScheme.surfaceVariant
-        )
-    ){
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
-        ) {
-            Row(modifier = Modifier.fillMaxWidth()){
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 12.dp, vertical = 4.dp),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "First Name",
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                    Text(
-                        text = "Last name",
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                }
-                IconButton(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier
-                        .clip(CircleShape)
-//                        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = "Favorite",
-                        tint = MaterialTheme.colorScheme.outline
-                    )
-                }
-            }
-
-            Text(
-                text = "Email subject",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(top = 12.dp, bottom = 8.dp),
-            )
-            Text(
-                text = "Email body",
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-    }
-}
-
-
-val newsListPreview : List<NewsItem> = kotlin.collections.listOf(
-    NewsItem(), NewsItem(), NewsItem(), NewsItem(), NewsItem(), NewsItem(), NewsItem(), NewsItem(), NewsItem(), NewsItem()
-)
-
-class newsListParameterProvider : PreviewParameterProvider<List<NewsItem>>{
-    override val values: Sequence<List<NewsItem>>
-        get() = listOf(newsListPreview).asSequence()
-}
-
-@Preview
-@Composable
-fun HelpNPlayNewsListPreview(
-    modifier: Modifier = Modifier,
-    newsLazyListState: LazyListState = LazyListState(0, 3),
-){
-    Box(modifier = modifier.windowInsetsPadding(WindowInsets.statusBars)){
-        LazyColumn(
-            modifier = modifier
-                .fillMaxWidth(),
-            state = newsLazyListState
-        ) {
-            items(newsListPreview){ item: NewsItem ->
-                HelpNPlayNewsItem(
-                    modifier =modifier,
-                    newsItem = item
+                    event =item,
+                    onClickSeeEvent = {navHostController.navigateToEvent(item.id)}
                 )
             }
         }

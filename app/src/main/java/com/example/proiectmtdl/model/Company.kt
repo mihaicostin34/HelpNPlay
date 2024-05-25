@@ -1,9 +1,8 @@
 package com.example.proiectmtdl.model
 
 class Company(
-    override val username: String,
-    override val email: String,
+    override val username: String ="company username",
+    override val email: String = "companyemail",
     override val type: UserType = UserType.COMPANY,
-    override val profilePicture: String,
-) : User(username, email, type, profilePicture) {
+) : User(username, email, type) {
 }

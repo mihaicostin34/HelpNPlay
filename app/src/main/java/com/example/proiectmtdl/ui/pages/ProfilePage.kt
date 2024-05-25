@@ -1,6 +1,7 @@
 import android.provider.ContactsContract.CommonDataKinds.Organization
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -18,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -71,7 +74,6 @@ val mockedQuest = Quest(
 val mockedVolunteer = Volunteer(
     username = "Mocked volunteer username",
     email = "email (should not appear)",
-    profilePicture = "Some picture",
     firstName = "FirstName",
     lastName = "LastName",
     friends = LinkedList(),
@@ -88,7 +90,8 @@ fun HelpNPlayProfilePage(
     username: String = "Some preview username",
     dominantColor : Color = Color.LightGray,
     topPadding: Dp = 20.dp,
-    profilePictureSize : Dp = 200.dp
+    profilePictureSize : Dp = 200.dp,
+    currentUser: Boolean = false
 ) {
     //get user info
     Box(modifier = Modifier
@@ -111,7 +114,8 @@ fun HelpNPlayProfilePage(
                 .clip(RoundedCornerShape(10.dp))
                 .background(Color.White)
                 .padding(16.dp)
-                .align(Alignment.BottomCenter)
+                .align(Alignment.BottomCenter),
+            currentUser = currentUser
         )
     }
 }
@@ -139,17 +143,19 @@ fun ProfileTopSection(
 fun ProfileDetailsWrapper(
     username: String,
     modifier: Modifier = Modifier,
-    loadingModifier: Modifier = Modifier
+    loadingModifier: Modifier = Modifier,
+    currentUser: Boolean
 ) {
     //TODO: here comes the loading part
-    ProfileDetailsSection(username, modifier = modifier)
+    ProfileDetailsSection(username, modifier = modifier, currentUser = currentUser)
 }
 
 @Composable
 fun ProfileDetailsSection(
     username: String,
     user: User = mockedVolunteer,
-    modifier: Modifier
+    modifier: Modifier,
+    currentUser: Boolean
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -169,7 +175,7 @@ fun ProfileDetailsSection(
             fontSize = 20.sp
         )
         when(user){
-            is Volunteer -> VolunteerStats(volunteer = user, modifier = Modifier.padding(top = 20.dp))
+            is Volunteer -> VolunteerStats(volunteer = user, modifier = Modifier.padding(top = 20.dp), currentUser = currentUser)
             is Organizer -> OrganizerStats()
         }
     }
@@ -180,7 +186,8 @@ fun VolunteerStats(
     volunteer: Volunteer,
     modifier: Modifier = Modifier,
     volunteerStatsLazyListState: LazyListState = LazyListState(0, 3),
-    volunteerQuestsLazyListState: LazyListState = LazyListState(0, 3)
+    volunteerQuestsLazyListState: LazyListState = LazyListState(0, 3),
+    currentUser: Boolean
 ) {
     //prizes
     Column(
@@ -206,18 +213,30 @@ fun VolunteerStats(
             }
         }
 
-        Text(
-            text = "Completed quests: ",
-            modifier = Modifier.padding(top = 20.dp, start = 10.dp)
-        )
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth().height(200.dp),
-            state = volunteerQuestsLazyListState
-        ) {
-            items(volunteer.participations){
-                ParticipationItem(
-                    quest = it
-                )
+        if(currentUser){
+            //logout button
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                LogoutButton()
+            }
+        }else{
+            Text(
+                text = "Completed quests: ",
+                modifier = Modifier.padding(top = 20.dp, start = 10.dp)
+            )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                state = volunteerQuestsLazyListState
+            ) {
+                items(volunteer.participations){
+                    ParticipationItem(
+                        quest = it
+                    )
+                }
             }
         }
     }
@@ -279,4 +298,14 @@ fun ParticipationItem(
 @Composable
 fun OrganizerStats() {
     
+}
+
+@Preview
+@Composable
+fun LogoutButton(
+    modifier: Modifier = Modifier
+) {
+    Button(onClick = { /*TODO*/ }, modifier = Modifier) {
+        Text(text = "Log out")
+    }
 }

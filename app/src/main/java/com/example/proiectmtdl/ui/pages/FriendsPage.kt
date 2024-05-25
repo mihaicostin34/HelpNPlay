@@ -63,7 +63,6 @@ val mockedQuest = Quest(
 val mockedFriend = Volunteer(
     username = "Mocked friend username",
     email = "email (should not appear)",
-    profilePicture = "Some picture",
     firstName = "FirstName",
     lastName = "LastName",
     friends = LinkedList(),

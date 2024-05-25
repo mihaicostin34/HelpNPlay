@@ -38,11 +38,40 @@ object Friends: NavigationDestination{
 
 object UserDestination : NavigationDestination{
     const val usernameArg = "username"
-    override val route: String = "user/{${UserDestination.usernameArg}}"
+    override val route: String = "user/{${usernameArg}}"
     val arguments = listOf(
         navArgument(usernameArg){type = NavType.StringType}
     )
     override val icon: ImageVector = Icons.Default.Star
+}
+
+object Event: NavigationDestination{
+    const val eventArg = "eventId"
+    override val route: String = "event/{${eventArg}}"
+    val arguments = listOf(
+        navArgument(eventArg){type = NavType.StringType}
+    )
+    override val icon: ImageVector = Icons.Default.Star
+}
+
+object Login: NavigationDestination{
+    override val route = "login"
+    override val icon = Icons.Default.Star
+}
+
+object Signup: NavigationDestination{
+    override val route = "signup"
+    override val icon = Icons.Default.Star
+}
+
+object Start: NavigationDestination{
+    override val route = "start"
+    override val icon = Icons.Default.Star
+}
+
+object FullMainPage: NavigationDestination{
+    override val route = "main"
+    override val icon = Icons.Default.Star
 }
 
 val navigationTabOptions = listOf(News, Search, Friends, Profile)

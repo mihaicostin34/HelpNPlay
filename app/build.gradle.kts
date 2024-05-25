@@ -52,6 +52,7 @@ android {
 dependencies {
     val composeBom = platform("androidx.compose:compose-bom:2024.05.00")
     implementation(composeBom)
+    implementation("androidx.compose.material:material-icons-extended:1.4.3")
 
     //noinspection UseTomlInstead
     debugImplementation("androidx.compose.ui:ui-tooling")
