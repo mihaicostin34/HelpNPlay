@@ -1,6 +1,5 @@
 package com.example.proiectmtdl.ui.pages
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,9 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
@@ -22,6 +19,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -37,26 +35,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.SemanticsProperties.ImeAction
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.proiectmtdl.R
+import com.example.proiectmtdl.functionalities.account.checkLogin
+import com.example.proiectmtdl.functionalities.account.LoginInformation
+import com.example.proiectmtdl.functionalities.account.SignupInformation
+import com.example.proiectmtdl.functionalities.account.checkSignup
 import com.example.proiectmtdl.model.User
+import com.example.proiectmtdl.model.UserType
 import com.example.proiectmtdl.navigateSingleTopTo
 import com.example.proiectmtdl.ui.navigation.FullMainPage
 import com.example.proiectmtdl.ui.navigation.Login
+import com.example.proiectmtdl.ui.navigation.News
 import com.example.proiectmtdl.ui.navigation.Signup
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun HelpNPlayLogin(
@@ -65,6 +69,7 @@ fun HelpNPlayLogin(
     Surface(
         modifier = Modifier.fillMaxSize()
     ) {
+        var loading by remember{ mutableStateOf(false) }
         Column(verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
@@ -126,9 +131,37 @@ fun HelpNPlayLogin(
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 modifier = Modifier.padding(bottom = 10.dp)
             )
-            Submit({
-                navHostController.navigateSingleTopTo(FullMainPage.route)
-            }) //TODO: load checking coroutine here
+            var errorText by remember{mutableStateOf("")}
+            var showErrorText by remember{mutableStateOf(false)}
+            if(loading){
+                CircularProgressIndicator(
+                    modifier = Modifier
+                )
+            }else{
+                Submit(
+                    onClickSubmit = {
+                        loading = true
+                        CoroutineScope(Dispatchers.IO).launch{
+                            val loginInformation = LoginInformation(username, passwd)
+                            val loginResult = checkLogin(loginInformation)
+                            if(loginResult == LoginInformation.LoginResult.LOGIN_SUCCESS){
+                                withContext(Dispatchers.Main){
+                                    loading = false
+                                    navHostController.navigateSingleTopTo("main/${loginInformation.username}")
+                                }
+                            }else{
+                                withContext(Dispatchers.Main){
+                                    loading = false
+                                    errorText = loginResult.message
+                                    showErrorText = true
+                                }
+                            }
+                        }
+                })
+            }
+            if(showErrorText){
+                Text(text = errorText)
+            }
         }
     }
 }
@@ -140,8 +173,7 @@ fun HelpNPlaySignup(
     Surface(
         modifier = Modifier.fillMaxSize()
     ) {
-
-        var user by remember{mutableStateOf(User())}
+        var loading by remember{ mutableStateOf(false) }
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -162,6 +194,7 @@ fun HelpNPlaySignup(
             val items = listOf("User Type", "Volunteer", "Organizer", "Company")
             var selectedIndex by remember{ mutableStateOf(0)}
             var selectedAccountType  by remember {mutableStateOf("User Type")}
+            var signupInformation by remember{ mutableStateOf(SignupInformation()) }
             Box(
                 modifier = Modifier
                     .height(60.dp)
@@ -194,12 +227,12 @@ fun HelpNPlaySignup(
                     }
                 }
             }
-
             when(selectedAccountType){
                 "Organizer"->{
+                    signupInformation = signupInformation.copy(accountType = UserType.ORGANIZER)
                     TextField(
-                        value = "",
-                        onValueChange = {},
+                        value = signupInformation.firstName,
+                        onValueChange = {signupInformation = signupInformation.copy(firstName = it)},
                         modifier = Modifier.padding(bottom = 10.dp),
                         placeholder = {Text(text = "First name")},
                         keyboardOptions = KeyboardOptions(
@@ -209,38 +242,55 @@ fun HelpNPlaySignup(
                     )
 
                     TextField(
-                        value = "",
-                        onValueChange = {},
+                        value = signupInformation.lastName,
+                        onValueChange = {signupInformation = signupInformation.copy(lastName = it)},
                         modifier = Modifier.padding(bottom = 10.dp),
                         placeholder = {Text(text = "Last name")}
                     )
 
                     TextField(
-                        value = "",
-                        onValueChange = {},
+                        value = signupInformation.companyName,
+                        onValueChange = {signupInformation = signupInformation.copy(companyName = it)},
                         modifier = Modifier.padding(bottom = 10.dp),
                         placeholder = {Text(text = "Company name")}
                     )
                 }
                 "Company"->{
+                    signupInformation = signupInformation.copy(accountType = UserType.COMPANY)
                     TextField(
-                        value = "",
-                        onValueChange = {},
+                        value = signupInformation.companyName,
+                        onValueChange = {signupInformation = signupInformation.copy(companyName = it)},
                         modifier = Modifier.padding(bottom = 10.dp),
                         placeholder = {Text(text = "Company name")}
                     )
                 }
-                else->{
+                "Volunteer"->{
+                    signupInformation = signupInformation.copy(accountType = UserType.VOLUNTEER)
                     TextField(
-                        value = "",
-                        onValueChange = {},
+                        value = signupInformation.firstName,
+                        onValueChange = {signupInformation = signupInformation.copy(firstName = it)},
                         modifier = Modifier.padding(bottom = 10.dp),
                         placeholder = {Text(text = "First name")},
                     )
 
                     TextField(
-                        value = "",
-                        onValueChange = {},
+                        value = signupInformation.lastName,
+                        onValueChange = {signupInformation = signupInformation.copy(lastName = it)},
+                        modifier = Modifier.padding(bottom = 10.dp),
+                        placeholder = {Text(text = "Last name")}
+                    )
+                }
+                else->{
+                    TextField(
+                        value = signupInformation.firstName,
+                        onValueChange = {signupInformation = signupInformation.copy(firstName = it)},
+                        modifier = Modifier.padding(bottom = 10.dp),
+                        placeholder = {Text(text = "First name")},
+                    )
+
+                    TextField(
+                        value = signupInformation.lastName,
+                        onValueChange = {signupInformation = signupInformation.copy(lastName = it)},
                         modifier = Modifier.padding(bottom = 10.dp),
                         placeholder = {Text(text = "Last name")}
                     )
@@ -248,8 +298,8 @@ fun HelpNPlaySignup(
             }
 
             TextField(
-                value = "",
-                onValueChange = {},
+                value = signupInformation.email,
+                onValueChange = {signupInformation = signupInformation.copy(email = it)},
                 modifier = Modifier.padding(bottom = 10.dp),
                 placeholder = {Text(text = "Email")}
             )
@@ -261,9 +311,10 @@ fun HelpNPlaySignup(
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
+
             TextField(
-                value = "",
-                onValueChange = {},
+                value = signupInformation.username,
+                onValueChange = { signupInformation = signupInformation.copy(username = it)},
                 modifier = Modifier.padding(bottom = 10.dp),
                 leadingIcon = leadingIconUsername,
                 placeholder = {Text(text = "username")}
@@ -284,8 +335,8 @@ fun HelpNPlaySignup(
                 }
             }
             TextField(
-                value = "",
-                onValueChange = {},
+                value = signupInformation.password,
+                onValueChange = {signupInformation = signupInformation.copy(password = it)},
                 leadingIcon = leadingIconPassword,
                 trailingIcon = trailingIconpassword,
                 placeholder = {Text(text = "Password")},
@@ -300,17 +351,46 @@ fun HelpNPlaySignup(
                 }
             }
             TextField(
-                value = "",
-                onValueChange = {},
+                value = signupInformation.confirmPassword,
+                onValueChange = {signupInformation = signupInformation.copy(confirmPassword = it)},
                 leadingIcon = leadingIconPassword,
                 trailingIcon = trailingIconpassword,
                 placeholder = {Text(text = "Confirm password")},
                 visualTransformation = if (isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 modifier = Modifier.padding(bottom = 10.dp)
             )
-            Submit({
-                navHostController.navigateSingleTopTo(FullMainPage.route)
-            })
+            var showErrorText by remember{ mutableStateOf(false) }
+            var errorText by remember{ mutableStateOf("") }
+            if(loading){
+                CircularProgressIndicator(
+                    modifier = Modifier
+                )
+            }else{
+                Submit(
+                    onClickSubmit = {
+                        loading = true
+                        CoroutineScope(Dispatchers.IO).launch{
+                            val signupResult = checkSignup(signupInformation)
+                            if(signupResult == SignupInformation.SignupResult.SIGNUP_SUCCESS){
+                                withContext(Dispatchers.Main){
+                                    loading = false
+                                    navHostController.navigateSingleTopTo("main/${signupInformation.username}")
+                                }
+                            }else{
+                                //TODO: show error message
+                                withContext(Dispatchers.Main){
+                                    loading = false
+                                    errorText= signupResult.message
+                                    showErrorText = true
+                                }
+                            }
+                        }
+                    }
+                )
+            }
+            if(showErrorText){
+                Text(text = errorText)
+            }
         }
     }
 }

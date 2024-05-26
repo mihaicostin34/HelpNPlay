@@ -70,8 +70,10 @@ object Start: NavigationDestination{
 }
 
 object FullMainPage: NavigationDestination{
-    override val route = "main"
+    const val usernameArg = "username"
+    override val route = "main/{${usernameArg}}"
     override val icon = Icons.Default.Star
+    val arguments = listOf(navArgument(usernameArg){type = NavType.StringType})
 }
 
 val navigationTabOptions = listOf(News, Search, Friends, Profile)

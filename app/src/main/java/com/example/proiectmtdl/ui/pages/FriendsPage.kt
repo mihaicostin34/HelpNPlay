@@ -66,10 +66,10 @@ val mockedFriend = Volunteer(
     firstName = "FirstName",
     lastName = "LastName",
     friends = LinkedList(),
-    participations = listOf(mockedQuest, mockedQuest, mockedQuest, mockedQuest),
+//    participations = listOf(mockedQuest, mockedQuest, mockedQuest, mockedQuest),
     level = 7,
     currentExperience = 154,
-    prizes = listOf(mockedBadge, mockedBadge, mockedBadge, mockedBadge, mockedBadge, mockedBadge),
+//    prizes = listOf(mockedBadge, mockedBadge, mockedBadge, mockedBadge, mockedBadge, mockedBadge),
 )
 
 val friends = LinkedList<Volunteer>(

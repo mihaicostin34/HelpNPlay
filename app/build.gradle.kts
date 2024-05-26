@@ -50,6 +50,19 @@ android {
 }
 
 dependencies {
+
+    //retrofit dependencies
+    implementation("com.android.support:cardview-v7:28.0.0")
+    implementation("com.android.support:recyclerview-v7:28.0.0")
+    implementation("com.squareup.picasso:picasso:2.5.2")
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.retrofit2:converter-scalars:2.5.0")
+
     val composeBom = platform("androidx.compose:compose-bom:2024.05.00")
     implementation(composeBom)
     implementation("androidx.compose.material:material-icons-extended:1.4.3")

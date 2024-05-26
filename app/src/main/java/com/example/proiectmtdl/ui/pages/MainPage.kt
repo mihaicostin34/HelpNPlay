@@ -23,6 +23,7 @@ import com.example.proiectmtdl.ui.navigation.navigationTabOptions
 
 @Composable
 fun HelpnPlayMainPage(
+    username: String
 ) {
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
@@ -53,6 +54,7 @@ fun HelpnPlayMainPage(
                 route = Profile.route
             ){
                 HelpNPlayProfilePage(
+                    username = username,
                     dominantColor = MaterialTheme.colorScheme.primaryContainer,
                     currentUser = true
                 )
@@ -79,7 +81,8 @@ fun HelpnPlayMainPage(
                 )
             }
             composable(
-                route = "event/{${Event.eventArg}}"
+                route = "event/{${Event.eventArg}}",
+                arguments = Event.arguments
             ){
                 val eventId = it.arguments?.getString(Event.eventArg)
                 HelpNPlayEventPage(eventId!!)

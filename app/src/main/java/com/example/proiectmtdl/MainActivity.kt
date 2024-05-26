@@ -72,9 +72,11 @@ class MainActivity : ComponentActivity() {
                         HelpNPlaySignup(navController)
                     }
                     composable(
-                        route = FullMainPage.route
+                        route = FullMainPage.route,
+                        arguments = FullMainPage.arguments
                     ){
-                        HelpnPlayMainPage()
+                        val username = it.arguments?.getString(FullMainPage.usernameArg)
+                        HelpnPlayMainPage(username!!)
                     }
                 }
             }

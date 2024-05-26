@@ -77,10 +77,10 @@ val mockedVolunteer = Volunteer(
     firstName = "FirstName",
     lastName = "LastName",
     friends = LinkedList(),
-    participations = listOf(mockedQuest, mockedQuest, mockedQuest, mockedQuest),
+//    participations = listOf(mockedQuest, mockedQuest, mockedQuest, mockedQuest),
     level = 7,
     currentExperience = 154,
-    prizes = listOf(mockedBadge, mockedBadge, mockedBadge, mockedBadge, mockedBadge, mockedBadge),
+//    prizes = listOf(mockedBadge, mockedBadge, mockedBadge, mockedBadge, mockedBadge, mockedBadge),
 )
 
 //receives the username, fetches the user from the database and displays their profile
