@@ -18,6 +18,7 @@ data class SignupInformation(
         USERNAME_ALREADY_EXISTS("Username already exists"),
         EMAIL_ALREADY_ACCOUNT("There already is an account with that email"),
         TYPE_NOT_SELECTED("Please select account type"),
+        COMPANY_NOT_EXIST("The selected company does not exist"),
         NOT_EMAIL("Please enter a valid email password"),
         UNKNOWN_ERROR("Something went wrong. Please try again")
     }

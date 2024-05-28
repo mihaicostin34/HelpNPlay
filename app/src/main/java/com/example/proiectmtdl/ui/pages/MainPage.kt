@@ -1,16 +1,25 @@
 package com.example.proiectmtdl.ui.pages
 
 import HelpNPlayProfilePage
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.proiectmtdl.functionalities.account.checkUsername
+import com.example.proiectmtdl.model.UserType
 import com.example.proiectmtdl.navigateSingleTopTo
 import com.example.proiectmtdl.ui.navigation.Event
 import com.example.proiectmtdl.ui.navigation.Friends
@@ -21,10 +30,16 @@ import com.example.proiectmtdl.ui.navigation.Search
 import com.example.proiectmtdl.ui.navigation.UserDestination
 import com.example.proiectmtdl.ui.navigation.navigationTabOptions
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HelpnPlayMainPage(
     username: String
 ) {
+    var userType by remember{mutableStateOf(UserType.NOT_SPECIFIED)}
+    LaunchedEffect(key1 = 0) {
+        userType = checkUsername(username)
+        Log.d(null, userType.name)
+    }
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStack?.destination
@@ -33,7 +48,10 @@ fun HelpnPlayMainPage(
         bottomBar = {
             HelpNPlayNavigationBar(
                 allScreens = navigationTabOptions,
-                onTabSelected = {newScreen -> navController.navigateSingleTopTo(newScreen.route)},
+                onTabSelected =
+                    {
+                        newScreen -> navController.navigateSingleTopTo(newScreen.route)
+                    },
                 currentScreen = currentScreen
             )
         }
@@ -62,7 +80,7 @@ fun HelpnPlayMainPage(
             composable(
                 route = Search.route
             ){
-                HelpNPlaySearchPage()
+                HelpNPlaySearchPage(username, userType)
             }
             composable(
                 route = Friends.route
@@ -72,12 +90,10 @@ fun HelpnPlayMainPage(
                 )
             }
             composable(
-                route = "user/{${UserDestination.usernameArg}}",
-                arguments = UserDestination.arguments
+                route = "/user"
             ){
-                val username = it.arguments?.getString(UserDestination.usernameArg)
                 HelpNPlayProfilePage(
-                    username = username!!
+                    username = username
                 )
             }
             composable(

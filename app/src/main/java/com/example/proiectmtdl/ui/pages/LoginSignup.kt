@@ -1,5 +1,6 @@
 package com.example.proiectmtdl.ui.pages
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +38,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -45,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.proiectmtdl.R
 import com.example.proiectmtdl.functionalities.account.checkLogin
 import com.example.proiectmtdl.functionalities.account.LoginInformation
 import com.example.proiectmtdl.functionalities.account.SignupInformation
@@ -144,16 +148,19 @@ fun HelpNPlayLogin(
                         CoroutineScope(Dispatchers.IO).launch{
                             val loginInformation = LoginInformation(username, passwd)
                             val loginResult = checkLogin(loginInformation)
-                            if(loginResult == LoginInformation.LoginResult.LOGIN_SUCCESS){
-                                withContext(Dispatchers.Main){
-                                    loading = false
-                                    navHostController.navigateSingleTopTo("main/${loginInformation.username}")
+                            when(loginResult){
+                                "VOLUNTEER", "ORGANIZER", "COMPANY"->{
+                                    withContext(Dispatchers.Main){
+                                        loading = false
+                                        navHostController.navigateSingleTopTo("main/${username}")
+                                    }
                                 }
-                            }else{
-                                withContext(Dispatchers.Main){
-                                    loading = false
-                                    errorText = loginResult.message
-                                    showErrorText = true
+                                else ->{
+                                    withContext(Dispatchers.Main){
+                                        loading = false
+                                        errorText = loginResult
+                                        showErrorText = true
+                                    }
                                 }
                             }
                         }
@@ -407,15 +414,14 @@ fun OpeningPage(
             modifier = Modifier
                 .fillMaxHeight()
                 .wrapContentWidth(align = Alignment.CenterHorizontally)
-                .padding(top = 350.dp)
+                .padding(top = 150.dp)
                 .width(200.dp)
         ) {
-            //TODO: add app icon
-//            Image(
-//                painter = painterResource(id = R.drawable.picture1),
-//                contentDescription = null,
-//                modifier = Modifier.padding(20.dp)
-//            )
+            Image(
+                painter = painterResource(id = R.drawable.pozamtdl),
+                contentDescription = null,
+                modifier = Modifier.padding(20.dp)
+            )
             Button(onClick = { navHostController.navigateSingleTopTo(Login.route) },
                 modifier = Modifier
                     .height(40.dp)

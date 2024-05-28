@@ -26,8 +26,12 @@ object Profile: NavigationDestination{
 }
 
 object Search: NavigationDestination{
+    const val usernameArg = "username"
     override val route: String = "search"
     override val icon: ImageVector = Icons.Default.Search
+    val arguments = listOf(
+        navArgument(UserDestination.usernameArg){type = NavType.StringType}
+    )
 }
 
 //TODO: create and add page
@@ -71,6 +75,7 @@ object Start: NavigationDestination{
 
 object FullMainPage: NavigationDestination{
     const val usernameArg = "username"
+    const val typeArg = "VOLUNTEER"
     override val route = "main/{${usernameArg}}"
     override val icon = Icons.Default.Star
     val arguments = listOf(navArgument(usernameArg){type = NavType.StringType})

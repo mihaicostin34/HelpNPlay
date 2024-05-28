@@ -46,6 +46,7 @@ import com.example.proiectmtdl.model.Event
 import com.example.proiectmtdl.model.Organizer
 import com.example.proiectmtdl.model.Quest
 import com.example.proiectmtdl.model.User
+import com.example.proiectmtdl.model.UserType
 import com.example.proiectmtdl.model.Volunteer
 import com.example.proiectmtdl.ui.utils.ProgressCircle
 import java.util.Date
@@ -84,7 +85,6 @@ val mockedVolunteer = Volunteer(
 )
 
 //receives the username, fetches the user from the database and displays their profile
-@Preview
 @Composable
 fun HelpNPlayProfilePage(
     username: String = "Some preview username",

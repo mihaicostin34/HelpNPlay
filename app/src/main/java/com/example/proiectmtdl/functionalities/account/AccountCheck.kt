@@ -8,14 +8,12 @@ import com.example.proiectmtdl.model.User
 import com.example.proiectmtdl.model.UserType
 import com.example.proiectmtdl.model.Volunteer
 
-suspend fun checkLogin(loginInformation: LoginInformation): LoginInformation.LoginResult{
-    //make sure that no fields are empty
-    val reqResult = getNetworkService().checkLogin(loginInformation)
-    return when(reqResult){
-        "Ok"-> LoginInformation.LoginResult.LOGIN_SUCCESS
-        "Invalid"-> LoginInformation.LoginResult.INVALID_INFORMATION
-        else-> LoginInformation.LoginResult.UNKNOWN_ERROR
+suspend fun checkLogin(loginInformation: LoginInformation): String{
+    if(loginInformation.password=="" || loginInformation.username==""){
+        return "Invalid"
     }
+    return getNetworkService().checkLogin(loginInformation)
+
 }
 
 suspend fun checkSignup(signupInformation: SignupInformation) : SignupInformation.SignupResult{
@@ -24,6 +22,24 @@ suspend fun checkSignup(signupInformation: SignupInformation) : SignupInformatio
         return SignupInformation.SignupResult.PASSWORDS_DONT_MATCH
     }
     val reqRes = getNetworkService().checkSignup(signupInformation)
+    return when(reqRes){
+        "Username already exists"-> SignupInformation.SignupResult.USERNAME_ALREADY_EXISTS
+        "Email already exists"-> SignupInformation.SignupResult.EMAIL_ALREADY_ACCOUNT
+        "Ok"-> SignupInformation.SignupResult.SIGNUP_SUCCESS
+        "Company does not exist"-> SignupInformation.SignupResult.COMPANY_NOT_EXIST
+        else-> SignupInformation.SignupResult.UNKNOWN_ERROR
+    }
 
-    return SignupInformation.SignupResult.SIGNUP_SUCCESS
+}
+
+suspend fun checkUsername(username: String) : UserType{
+    val userResult : String = getNetworkService().getUserType(username)
+    return when(userResult){
+        "VOLUNTEER" -> UserType.VOLUNTEER
+        "ORGANIZER" -> UserType.ORGANIZER
+        "COMPANY" -> UserType.COMPANY
+        "ADMIN"-> UserType.ADMIN
+        else -> UserType.NOT_SPECIFIED
+    }
+
 }

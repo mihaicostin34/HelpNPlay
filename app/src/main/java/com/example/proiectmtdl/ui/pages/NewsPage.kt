@@ -23,6 +23,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.selected
@@ -32,6 +35,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.proiectmtdl.functionalities.events.CreateEventInformation
+import com.example.proiectmtdl.functionalities.service
 import com.example.proiectmtdl.model.Event
 import com.example.proiectmtdl.model.NewsItem
 import com.example.proiectmtdl.model.User
@@ -44,13 +49,12 @@ fun NavHostController.navigateToEvent(eventId: String) = this.navigateSingleTopT
 
 val mockedEvents = LinkedList(listOf(mockedEvent, mockedEvent, mockedEvent))
 
-@Preview
 @Composable
 fun HelpNPlayNewsItem(
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
     isOpened: Boolean = false,
-    event: Event = mockedEvent,
+    event: CreateEventInformation,
     onClickSeeEvent : (String)-> Unit = {}
 ){
     Card (
@@ -58,7 +62,7 @@ fun HelpNPlayNewsItem(
             .padding(horizontal = 16.dp, vertical = 4.dp)
             .semantics { selected = isSelected }
             .clip(CardDefaults.shape)
-            .clickable { onClickSeeEvent(event.id) }
+            .clickable { onClickSeeEvent(event.title) }
         ,
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer
@@ -72,18 +76,17 @@ fun HelpNPlayNewsItem(
                 .padding(20.dp)
         ) {
             Text(
-                text = event.name,
+                text = event.title,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(top = 12.dp, bottom = 8.dp),
             )
             Text(
-                text = event.organizer?.username +  " of " +event.company.username,
+                text = event.organizer +  " of " +event.creator,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
 
-            //TODO: maybe add date handling and showing here
             Row(modifier = Modifier.fillMaxWidth()){
                 var availableXp = 0
                 for (quest in event.quests) {
@@ -102,20 +105,27 @@ fun HelpNPlayNewsItem(
 fun HelpNPlayNewsList(
     modifier: Modifier = Modifier,
     newsLazyListState: LazyListState = LazyListState(0, 3),
-    events: List<Event> = mockedEvents,
     navHostController: NavHostController
 ){
+    //get all events
+    var allEvents = remember{ mutableStateListOf<CreateEventInformation>() }
+    LaunchedEffect(key1 = 0) {
+        val allEventsOnServer = service.getAllEvents()
+        for(event: CreateEventInformation in allEventsOnServer){
+            allEvents.add(event)
+        }
+    }
     Box(modifier = modifier.windowInsetsPadding(WindowInsets.statusBars)){
         LazyColumn(
             modifier = modifier
                 .fillMaxWidth(),
             state = newsLazyListState
         ) {
-            items(events){ item: Event ->
+            items(allEvents){ item: CreateEventInformation ->
                 HelpNPlayNewsItem(
                     modifier =modifier,
                     event =item,
-                    onClickSeeEvent = {navHostController.navigateToEvent(item.id)}
+                    onClickSeeEvent = {navHostController.navigateToEvent(item.title)}
                 )
             }
         }

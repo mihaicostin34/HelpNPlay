@@ -2,6 +2,7 @@ package com.example.proiectmtdl.functionalities
 
 import com.example.proiectmtdl.functionalities.account.LoginInformation
 import com.example.proiectmtdl.functionalities.account.SignupInformation
+import com.example.proiectmtdl.functionalities.events.CreateEventInformation
 import com.example.proiectmtdl.model.User
 import com.example.proiectmtdl.model.Volunteer
 import com.google.gson.GsonBuilder
@@ -11,7 +12,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 val service: MainNetwork by lazy {
 
@@ -42,5 +45,18 @@ interface MainNetwork {
 
     @POST("/users/signup")
     suspend fun checkSignup(@Body signupInformation: SignupInformation): String
-}
 
+    @GET("/users/type/{username}")
+    suspend fun getUserType(@Path("username") username: String) : String
+
+    @POST("/event/create")
+    suspend fun createEvent(@Body createEventInformation: CreateEventInformation): String
+
+    @GET("/event/all")
+    suspend fun getAllEvents(): List<CreateEventInformation>
+
+    @GET("/event/{eventTitle}")
+    suspend fun getEventDetails(@Path("eventTitle") eventTitle: String) : CreateEventInformation
+
+
+}

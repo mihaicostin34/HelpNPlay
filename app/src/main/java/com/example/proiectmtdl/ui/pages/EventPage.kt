@@ -2,8 +2,6 @@ package com.example.proiectmtdl.ui.pages
 
 import BadgeItem
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,39 +9,36 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import com.example.proiectmtdl.model.AwardsMapper
+import com.example.proiectmtdl.functionalities.events.CreateEventInformation
+import com.example.proiectmtdl.functionalities.events.NewQuest
+import com.example.proiectmtdl.functionalities.service
 import com.example.proiectmtdl.model.Event
 import com.example.proiectmtdl.model.Organizer
 import com.example.proiectmtdl.model.Quest
 import com.example.proiectmtdl.model.Volunteer
-import com.example.proiectmtdl.navigateSingleTopTo
 import mockedVolunteer
+import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.LinkedList
 
@@ -92,9 +87,13 @@ val mockedEvent = Event(
 
 @Composable
 fun HelpNPlayEventPage(
-    eventId: String = "param event id",
+    eventTitle: String,
     modifier: Modifier = Modifier
 ) {
+    var event by remember{mutableStateOf(CreateEventInformation())}
+    LaunchedEffect(key1 = 0) {
+        event = service.getEventDetails(eventTitle)
+    }
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -116,7 +115,7 @@ fun HelpNPlayEventPage(
                 .fillMaxWidth()
         ) {
             Text(
-                text = eventId, //TODO: change this with the event name
+                text = eventTitle, //TODO: change this with the event name
                 modifier = Modifier
                     .padding(top = 16.dp, start = 10.dp, bottom = 10.dp)
                     .wrapContentWidth(align = Alignment.CenterHorizontally),
@@ -137,13 +136,17 @@ fun HelpNPlayEventPage(
                 ){
                     Column {
                         Text(
-                            text = "Organized by: ${mockedEvent.organizer?.username}",
+                            text = "Organized by: ${event.organizer}",
                             modifier = Modifier.padding(bottom = 10.dp)
                         )
                         Text(
-                            text = "Description: ${mockedEvent.description}",
+                            text = "Description: ${event.description}",
                             modifier = Modifier.padding(bottom = 10.dp)
                         )
+                        val eventName = event.title
+                        val sdf = SimpleDateFormat("dd/M/yyy HH:mm:ss")
+                        val dates = "From ${sdf.format(event.startDate)} to ${sdf.format(event.endDate)}"
+                        Text(text  = "$eventName - $dates")
                     }
                 }
             }
@@ -158,8 +161,8 @@ fun HelpNPlayEventPage(
                     modifier = Modifier.padding(start = 10.dp),
                     style = subtitleStyle
                 )
-                for(quest in mockedEvent.quests){
-                    ImprovedQuestItem(quest)
+                for(quest in event.quests){
+                    ImprovedQuestItem(quest, event)
                 }
                 Text(
                     text = "Available Prizes:",
@@ -172,7 +175,7 @@ fun HelpNPlayEventPage(
                         .fillMaxWidth()
                         .padding(start = 40.dp, end = 40.dp)
                 ){
-                    for(pair in mockedEvent.awards){
+                    for(pair in event.badges){
                         val award = pair.first
                         val count = pair.second
                         Column(
@@ -193,10 +196,10 @@ fun HelpNPlayEventPage(
     }
 }
 
-@Preview
 @Composable
 fun ImprovedQuestItem(
-    quest: Quest = mockedQuest2,
+    quest: NewQuest,
+    event: CreateEventInformation,
     isSelected: Boolean = false,
     modifier: Modifier = Modifier
 ) {
@@ -212,18 +215,7 @@ fun ImprovedQuestItem(
 //                   .fillMaxWidth()
                 .padding(end = 10.dp)
         ){
-            Text(text = quest.title)
-            val eventName = if(quest.event==null) "Unknown event" else quest.event.name
-            val dates = if(quest.event?.dates?.size==2){
-                //to from
-                "To from"
-            }else if(quest.event?.dates?.size==1){
-                //date
-                "On"
-            }else{
-                "Unknown dates"
-            }
-            Text(text  = "$eventName - $dates")
+            Text(text = quest.description)
         }
         Column(
             modifier = Modifier

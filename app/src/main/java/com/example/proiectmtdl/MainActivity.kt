@@ -1,9 +1,11 @@
 package com.example.proiectmtdl
 
 import HelpNPlayProfilePage
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +38,6 @@ import com.example.proiectmtdl.ui.pages.FriendsPage
 import com.example.proiectmtdl.ui.pages.HelpNPlayEventPage
 import com.example.proiectmtdl.ui.pages.HelpNPlayLogin
 import com.example.proiectmtdl.ui.pages.HelpNPlayNewsList
-import com.example.proiectmtdl.ui.pages.HelpNPlaySearchPage
 import com.example.proiectmtdl.ui.pages.HelpNPlaySignup
 import com.example.proiectmtdl.ui.pages.HelpnPlayMainPage
 import com.example.proiectmtdl.ui.pages.OpeningPage
@@ -45,6 +46,7 @@ import com.example.proiectmtdl.ui.theme.ProiectMTDLTheme
 fun NavHostController.navigateSingleTopTo(route: String) = this.navigate(route){launchSingleTop = true}
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
