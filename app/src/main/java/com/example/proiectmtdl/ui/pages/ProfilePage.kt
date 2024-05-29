@@ -55,7 +55,6 @@ import java.util.LinkedList
 val mockedBadge = Badge(
     iconId = R.drawable.streaming,
     name = "Good player",
-    color = Color.Magenta
 )
 
 val mockedQuest = Quest(
@@ -90,7 +89,6 @@ fun HelpNPlayProfilePage(
     username: String = "Some preview username",
     dominantColor : Color = Color.LightGray,
     topPadding: Dp = 20.dp,
-    profilePictureSize : Dp = 200.dp,
     currentUser: Boolean = false
 ) {
     //get user info
@@ -157,6 +155,7 @@ fun ProfileDetailsSection(
     modifier: Modifier,
     currentUser: Boolean
 ) {
+
     val scrollState = rememberScrollState()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

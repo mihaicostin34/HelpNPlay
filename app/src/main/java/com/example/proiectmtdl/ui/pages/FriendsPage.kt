@@ -43,7 +43,6 @@ fun NavHostController.navigateToFriend(username: String) = this.navigateSingleTo
 val mockedBadge = Badge(
     iconId = R.drawable.streaming,
     name = "Good player",
-    color = Color.Magenta
 )
 
 val mockedQuest = Quest(

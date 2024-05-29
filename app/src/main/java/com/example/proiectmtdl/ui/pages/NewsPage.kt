@@ -46,9 +46,6 @@ import java.util.LinkedList
 
 fun NavHostController.navigateToEvent(eventId: String) = this.navigateSingleTopTo("event/$eventId")
 
-
-val mockedEvents = LinkedList(listOf(mockedEvent, mockedEvent, mockedEvent))
-
 @Composable
 fun HelpNPlayNewsItem(
     modifier: Modifier = Modifier,

@@ -101,7 +101,7 @@ fun HelpnPlayMainPage(
                 arguments = Event.arguments
             ){
                 val eventId = it.arguments?.getString(Event.eventArg)
-                HelpNPlayEventPage(eventId!!)
+                HelpNPlayEventPage(eventId!!, userType, username)
             }
         }
 

@@ -3,6 +3,7 @@ package com.example.proiectmtdl.functionalities
 import com.example.proiectmtdl.functionalities.account.LoginInformation
 import com.example.proiectmtdl.functionalities.account.SignupInformation
 import com.example.proiectmtdl.functionalities.events.CreateEventInformation
+import com.example.proiectmtdl.functionalities.events.EventApplication
 import com.example.proiectmtdl.model.User
 import com.example.proiectmtdl.model.Volunteer
 import com.google.gson.GsonBuilder
@@ -57,6 +58,12 @@ interface MainNetwork {
 
     @GET("/event/{eventTitle}")
     suspend fun getEventDetails(@Path("eventTitle") eventTitle: String) : CreateEventInformation
+
+    @POST("/event/application/create")
+    suspend fun applyForEvent(@Body eventApplication: EventApplication): String
+
+    @GET("/event/application/get/{username}")
+    suspend fun getApplications(@Path("username") username: String) : List<EventApplication>
 
 
 }

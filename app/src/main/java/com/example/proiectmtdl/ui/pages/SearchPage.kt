@@ -31,7 +31,9 @@ fun HelpNPlaySearchPage(
 
         }
         UserType.VOLUNTEER->{
-
+            HelpNPlayMyApplications(
+                username = username
+            )
         }
         UserType.COMPANY->{
             HelpNPlayEventCreation(

@@ -12,6 +12,6 @@ data class CreateEventInformation (
     val endDate: Date = Date(),
     val organizer: String ="",
     val quests: List<NewQuest> = listOf(),
-    val badges: List<Pair<Badge, Int>> =listOf()
+    val badges: List<Badge> =listOf()
 ){
 }
